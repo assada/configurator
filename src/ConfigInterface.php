@@ -38,4 +38,8 @@ interface ConfigInterface extends \ArrayAccess, \Iterator
      * @return array
      */
     public function all(): array;
+
+    public function remove(string $key);
+
+    public function setData(array $data);
 }

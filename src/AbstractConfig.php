@@ -81,6 +81,18 @@ class AbstractConfig implements ConfigInterface
         return $this->data;
     }
 
+    public function remove(string $key)
+    {
+        if ($this->has($key)) {
+            unset($this->data[$key]);
+        }
+    }
+
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+
     /**
      * @inheritdoc
      */

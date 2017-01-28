@@ -76,7 +76,9 @@ class Config extends AbstractConfig
 
             $parser = $this->getParser($extension);
 
-            $this->data = array_replace_recursive($this->data, (array)$parser->parse($file));
+            $data = array_replace_recursive($this->all(), (array)$parser->parse($file));
+
+            $this->setData($data);
         }
 
         return $this;
@@ -92,7 +94,7 @@ class Config extends AbstractConfig
     {
         $dumper = $this->getDumper($extension);
 
-        return $dumper->dump($this->data);
+        return $dumper->dump($this->all());
     }
 
     /**
