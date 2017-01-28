@@ -90,8 +90,3 @@ class Config extends AbstractConfig
         return [$files];
     }
 }
-
-$config = new Config('./test.json');
-$hello  = $config->get('hello');
-
-var_dump($hello);
