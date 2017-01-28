@@ -2,9 +2,6 @@
 
 namespace Assada;
 
-use ArrayAccess;
-use Iterator;
-
 
 /**
  * Class AbstractConfig
@@ -13,11 +10,9 @@ use Iterator;
  *
  * @author  Aleksey Ilyenko <assada.ua@gmail.com>
  */
-class AbstractConfig implements ArrayAccess, Iterator, ConfigInterface
+class AbstractConfig implements ConfigInterface
 {
     protected $data = [];
-
-    protected $cache = [];
 
     /**
      * @inheritdoc
@@ -26,15 +21,17 @@ class AbstractConfig implements ArrayAccess, Iterator, ConfigInterface
     {
         $keys = explode('.', $key);
 
+        $value   = $fallback;
+        $residue = $this->data;
         foreach ($keys as $k) {
-            if (array_key_exists($k, $this->data)) {
-                return $this->data[$k];
+            if (array_key_exists($k, $residue)) {
+                $value = $residue = $residue[$k];
             } else {
-                return false;
+                return $fallback;
             }
         }
 
-        return $fallback;
+        return $value;
     }
 
     /**
@@ -46,7 +43,7 @@ class AbstractConfig implements ArrayAccess, Iterator, ConfigInterface
 
         $data = &$this->data;
         while ($k = array_shift($map)) {
-            if (!isset($data[$k]) && count($map)) {
+            if (!array_key_exists($k, $data) && count($map)) {
                 $data[$k] = [];
             }
             $data = &$data[$k];
@@ -63,8 +60,10 @@ class AbstractConfig implements ArrayAccess, Iterator, ConfigInterface
     {
         $keys = explode('.', $key);
 
+        $residue = $this->data;
         foreach ($keys as $k) {
-            if (array_key_exists($k, $this->data)) {
+            if (array_key_exists($k, $residue)) {
+                $residue = $residue[$k];
                 continue;
             } else {
                 return false;

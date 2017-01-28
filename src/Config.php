@@ -2,8 +2,10 @@
 
 namespace Assada;
 
+use Assada\Dumper\DumperInterface;
 use Assada\Dumper\JsonDumper;
 use Assada\Parser\JsonParser;
+use Assada\Parser\ParserInterface;
 
 
 /**
@@ -27,6 +29,8 @@ class Config extends AbstractConfig
      * Config constructor.
      *
      * @param string|array $files
+     *
+     * @throws \Exception
      */
     public function __construct($files)
     {
@@ -34,21 +38,42 @@ class Config extends AbstractConfig
     }
 
     /**
-     * @param string|array $files
+     * @param array $dumpers
      *
      * @return \Assada\Config
      */
+    public function addDumpers(array $dumpers): Config
+    {
+        $this->fileDumpers = array_merge($this->fileDumpers, $dumpers);
+
+        return $this;
+    }
+
+    /**
+     * @param array $parsers
+     *
+     * @return \Assada\Config
+     */
+    public function addParsers(array $parsers): Config
+    {
+        $this->fileParsers = array_merge($this->fileParsers, $parsers);
+
+        return $this;
+    }
+
+    /**
+     * @param string|array $files
+     *
+     * @return \Assada\Config
+     * @throws \Exception
+     */
     public function add($files): Config
     {
-        $files = $this->getConfigFiles($files);
-
-        foreach ($files as $file) {
+        foreach ($this->getConfigFiles($files) as $file) {
             $info      = pathinfo($file);
             $parts     = explode('.', $info['basename']);
             $extension = array_pop($parts);
-            if ($extension === 'dist') {
-                $extension = array_pop($parts);
-            }
+
             $parser = $this->getParser($extension);
 
             $this->data = array_replace_recursive($this->data, (array)$parser->parse($file));
@@ -57,40 +82,72 @@ class Config extends AbstractConfig
         return $this;
     }
 
-    public function dump($extension)
+    /**
+     * @param string $extension
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function dump(string $extension): string
     {
         $dumper = $this->getDumper($extension);
 
         return $dumper->dump($this->data);
     }
 
-    private function getParser($extension)
+    /**
+     * @param string $extension
+     *
+     * @return \Assada\Parser\ParserInterface
+     * @throws \Exception
+     */
+    private function getParser(string $extension): ParserInterface
     {
+        $parser = null;
         foreach ($this->fileParsers as $fileParser => $extensions) {
             if (in_array($extension, $extensions, false)) {
-                return new $fileParser();
+                $parser = new $fileParser();
             }
         }
+        if (null === $parser) {
+            throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+        }
 
-        throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+        return $parser;
     }
 
-    private function getDumper($extension)
+    /**
+     * @param string $extension
+     *
+     * @return \Assada\Dumper\DumperInterface
+     * @throws \Exception
+     */
+    private function getDumper(string $extension): DumperInterface
     {
+        $dumper = null;
         foreach ($this->fileDumpers as $fileDumper => $extensions) {
             if (in_array($extension, $extensions, false)) {
-                return new $fileDumper();
+                $dumper = new $fileDumper();
             }
         }
+        if (null === $dumper) {
+            throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+        }
 
-        throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+        return $dumper;
     }
 
+    /**
+     * @param array|string $files
+     *
+     * @return array
+     * @throws \Exception
+     */
     private function getConfigFiles($files): array
     {
         if (is_array($files)) {
             $result = [];
-            foreach ($files as $file) {
+            foreach ((array)$files as $file) {
                 $result = array_merge($result, $this->getConfigFiles($file));
             }
 
