@@ -25,8 +25,7 @@ class AbstractConfig implements ConfigInterface
         $residue = $this->data;
         foreach ($keys as $k) {
             if (array_key_exists($k, $residue)) {
-                $residue = $residue[$k];
-                $value   = $this->data[$k];
+                $value = $residue = $residue[$k];
             } else {
                 return $fallback;
             }
