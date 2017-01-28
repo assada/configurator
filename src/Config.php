@@ -69,15 +69,11 @@ class Config extends AbstractConfig
      */
     public function add($files): Config
     {
-        $files = $this->getConfigFiles($files);
-
-        foreach ((array)$files as $file) {
+        foreach ($this->getConfigFiles($files) as $file) {
             $info      = pathinfo($file);
             $parts     = explode('.', $info['basename']);
             $extension = array_pop($parts);
-            if ($extension === 'dist') {
-                $extension = array_pop($parts);
-            }
+
             $parser = $this->getParser($extension);
 
             $this->data = array_replace_recursive($this->data, (array)$parser->parse($file));

@@ -14,8 +14,6 @@ class AbstractConfig implements ConfigInterface
 {
     protected $data = [];
 
-    protected $cache = [];
-
     /**
      * @inheritdoc
      */
@@ -23,15 +21,16 @@ class AbstractConfig implements ConfigInterface
     {
         $keys = explode('.', $key);
 
+        $value   = $fallback;
+        $residue = $this->data;
         foreach ($keys as $k) {
-            if (array_key_exists($k, $this->data)) {
-                return $this->data[$k];
-            } else {
-                return $fallback;
+            if (array_key_exists($k, $residue)) {
+                $residue = $residue[$k];
+                $value   = $this->data[$k];
             }
         }
 
-        return $fallback;
+        return $value;
     }
 
     /**
@@ -60,8 +59,10 @@ class AbstractConfig implements ConfigInterface
     {
         $keys = explode('.', $key);
 
+        $residue = $this->data;
         foreach ($keys as $k) {
-            if (array_key_exists($k, $this->data)) {
+            if (array_key_exists($k, $residue)) {
+                $residue = $residue[$k];
                 continue;
             } else {
                 return false;
