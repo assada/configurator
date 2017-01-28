@@ -77,14 +77,14 @@ class Config extends AbstractConfig
         if (is_dir($files)) {
             $paths = glob($files . '/*.*');
             if (empty($paths)) {
-                throw new \Exception("Configuration directory: [$files] is empty");
+                throw new \Exception(sprintf('Configuration directory: %s is empty', $files));
             }
 
             return $paths;
         }
         // If `$path` is not a file, throw an exception
         if (!file_exists($files)) {
-            throw new \Exception("Configuration file: [$files] cannot be found");
+            throw new \Exception(sprintf('Configuration file: %s cannot be found', $files));
         }
 
         return [$files];
