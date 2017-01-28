@@ -2,6 +2,7 @@
 
 namespace Assada;
 
+use Assada\Dumper\JsonDumper;
 use Assada\Parser\JsonParser;
 
 
@@ -16,6 +17,10 @@ class Config extends AbstractConfig
 {
     protected $fileParsers = [
         JsonParser::class => ['json'],
+    ];
+
+    protected $fileDumpers = [
+        JsonDumper::class => ['json'],
     ];
 
     /**
@@ -52,11 +57,29 @@ class Config extends AbstractConfig
         return $this;
     }
 
+    public function dump($extension)
+    {
+        $dumper = $this->getDumper($extension);
+
+        return $dumper->dump($this->data);
+    }
+
     private function getParser($extension)
     {
         foreach ($this->fileParsers as $fileParser => $extensions) {
             if (in_array($extension, $extensions, false)) {
                 return new $fileParser();
+            }
+        }
+
+        throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+    }
+
+    private function getDumper($extension)
+    {
+        foreach ($this->fileDumpers as $fileDumper => $extensions) {
+            if (in_array($extension, $extensions, false)) {
+                return new $fileDumper();
             }
         }
 
@@ -77,21 +100,16 @@ class Config extends AbstractConfig
         if (is_dir($files)) {
             $paths = glob($files . '/*.*');
             if (empty($paths)) {
-                throw new \Exception("Configuration directory: [$files] is empty");
+                throw new \Exception(sprintf('Configuration directory: %s is empty', $files));
             }
 
             return $paths;
         }
         // If `$path` is not a file, throw an exception
         if (!file_exists($files)) {
-            throw new \Exception("Configuration file: [$files] cannot be found");
+            throw new \Exception(sprintf('Configuration file: %s cannot be found', $files));
         }
 
         return [$files];
     }
 }
-
-$config = new Config('./test.json');
-$hello  = $config->get('hello');
-
-var_dump($hello);

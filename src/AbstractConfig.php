@@ -42,8 +42,18 @@ class AbstractConfig implements ArrayAccess, Iterator, ConfigInterface
      */
     public function set(string $key, $value)
     {
-        $this->data[$key] = $value;
-        //Todo: Doted keys
+        $map = explode('.', $key);
+
+        $data = &$this->data;
+        while ($k = array_shift($map)) {
+            if (!isset($data[$k]) && count($map)) {
+                $data[$k] = [];
+            }
+            $data = &$data[$k];
+            unset($map[$k]);
+        }
+
+        $data = $value;
     }
 
     /**
