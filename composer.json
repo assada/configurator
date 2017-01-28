@@ -1,0 +1,20 @@
+{
+  "name": "assada/configurator",
+  "type": "library",
+  "description": "Simple configuration container",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Assada",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Assada\\": "src"
+    }
+  }
+}
