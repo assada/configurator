@@ -2,6 +2,7 @@
 
 namespace Assada;
 
+use Assada\Dumper\JsonDumper;
 use Assada\Parser\JsonParser;
 
 
@@ -16,6 +17,10 @@ class Config extends AbstractConfig
 {
     protected $fileParsers = [
         JsonParser::class => ['json'],
+    ];
+
+    protected $fileDumpers = [
+        JsonDumper::class => ['json'],
     ];
 
     /**
@@ -52,11 +57,29 @@ class Config extends AbstractConfig
         return $this;
     }
 
+    public function dump($extension)
+    {
+        $dumper = $this->getDumper($extension);
+
+        return $dumper->dump($this->data);
+    }
+
     private function getParser($extension)
     {
         foreach ($this->fileParsers as $fileParser => $extensions) {
             if (in_array($extension, $extensions, false)) {
                 return new $fileParser();
+            }
+        }
+
+        throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+    }
+
+    private function getDumper($extension)
+    {
+        foreach ($this->fileDumpers as $fileDumper => $extensions) {
+            if (in_array($extension, $extensions, false)) {
+                return new $fileDumper();
             }
         }
 
@@ -89,4 +112,6 @@ class Config extends AbstractConfig
 
         return [$files];
     }
+
+
 }
