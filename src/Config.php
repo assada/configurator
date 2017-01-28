@@ -112,6 +112,4 @@ class Config extends AbstractConfig
 
         return [$files];
     }
-
-
 }
