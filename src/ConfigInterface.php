@@ -9,7 +9,7 @@ namespace Assada;
  *
  * @author  Aleksey Ilyenko <assada.ua@gmail.com>
  */
-interface ConfigInterface
+interface ConfigInterface extends \ArrayAccess, \Iterator
 {
     /**
      * @param string $key
