@@ -27,6 +27,8 @@ class AbstractConfig implements ConfigInterface
             if (array_key_exists($k, $residue)) {
                 $residue = $residue[$k];
                 $value   = $this->data[$k];
+            } else {
+                return $fallback;
             }
         }
 
