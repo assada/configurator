@@ -6,8 +6,12 @@ use Assada\Dumper\DumperInterface;
 use Assada\Dumper\JsonDumper;
 use Assada\Exception\FileNotFoundException;
 use Assada\Exception\UnsupportedExtensionException;
+use Assada\Parser\IniParser;
 use Assada\Parser\JsonParser;
 use Assada\Parser\ParserInterface;
+use Assada\Parser\PhpParser;
+use Assada\Parser\XmlParser;
+use Assada\Parser\YamlParser;
 
 
 /**
@@ -21,6 +25,10 @@ class Config extends AbstractConfig
 {
     protected $fileParsers = [
         JsonParser::class => ['json'],
+        YamlParser::class => ['yml'],
+        IniParser::class  => ['ini'],
+        PhpParser::class  => ['php'],
+        XmlParser::class  => ['xml']
     ];
 
     protected $fileDumpers = [
