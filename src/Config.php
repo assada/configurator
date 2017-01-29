@@ -4,6 +4,8 @@ namespace Assada;
 
 use Assada\Dumper\DumperInterface;
 use Assada\Dumper\JsonDumper;
+use Assada\Exception\FileNotFoundException;
+use Assada\Exception\UnsupportedExtensionException;
 use Assada\Parser\JsonParser;
 use Assada\Parser\ParserInterface;
 
@@ -28,9 +30,10 @@ class Config extends AbstractConfig
     /**
      * Config constructor.
      *
-     * @param string|array $files
+     * @param $files
      *
-     * @throws \Exception
+     * @throws \Assada\Exception\FileNotFoundException
+     * @throws \Assada\Exception\UnsupportedExtensionException
      */
     public function __construct($files)
     {
@@ -62,10 +65,11 @@ class Config extends AbstractConfig
     }
 
     /**
-     * @param string|array $files
+     * @param $files
      *
      * @return \Assada\Config
-     * @throws \Exception
+     * @throws \Assada\Exception\UnsupportedExtensionException
+     * @throws \Assada\Exception\FileNotFoundException
      */
     public function add($files): Config
     {
@@ -88,7 +92,7 @@ class Config extends AbstractConfig
      * @param string $extension
      *
      * @return string
-     * @throws \Exception
+     * @throws \Assada\Exception\UnsupportedExtensionException
      */
     public function dump(string $extension): string
     {
@@ -101,7 +105,7 @@ class Config extends AbstractConfig
      * @param string $extension
      *
      * @return \Assada\Parser\ParserInterface
-     * @throws \Exception
+     * @throws \Assada\Exception\UnsupportedExtensionException
      */
     private function getParser(string $extension): ParserInterface
     {
@@ -112,7 +116,7 @@ class Config extends AbstractConfig
             }
         }
         if (null === $parser) {
-            throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+            throw new UnsupportedExtensionException(sprintf('%s not supported such us configuration file', $extension));
         }
 
         return $parser;
@@ -122,7 +126,7 @@ class Config extends AbstractConfig
      * @param string $extension
      *
      * @return \Assada\Dumper\DumperInterface
-     * @throws \Exception
+     * @throws \Assada\Exception\UnsupportedExtensionException
      */
     private function getDumper(string $extension): DumperInterface
     {
@@ -133,23 +137,23 @@ class Config extends AbstractConfig
             }
         }
         if (null === $dumper) {
-            throw new \Exception(sprintf('%s not supported such us configuration file', $extension));
+            throw new UnsupportedExtensionException(sprintf('%s not supported such us dump format', $extension));
         }
 
         return $dumper;
     }
 
     /**
-     * @param array|string $files
+     * @param $files
      *
      * @return array
-     * @throws \Exception
+     * @throws \Assada\Exception\FileNotFoundException
      */
     private function getConfigFiles($files): array
     {
         if (is_array($files)) {
             $result = [];
-            foreach ((array)$files as $file) {
+            foreach ($files as $file) {
                 $result = array_merge($result, $this->getConfigFiles($file));
             }
 
@@ -157,18 +161,15 @@ class Config extends AbstractConfig
         }
 
         if (is_dir($files)) {
-            $paths = glob($files . '/*.*');
-            if (empty($paths)) {
-                throw new \Exception(sprintf('Configuration directory: %s is empty', $files));
-            }
-
-            return $paths;
+            return glob($files . '/*.*');
         }
-        // If `$path` is not a file, throw an exception
+
         if (!file_exists($files)) {
-            throw new \Exception(sprintf('Configuration file: %s cannot be found', $files));
+            throw new FileNotFoundException(sprintf('Configuration file: %s not found', $files));
         }
 
-        return [$files];
+        return [
+            $files
+        ];
     }
 }
