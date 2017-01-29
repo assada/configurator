@@ -17,14 +17,14 @@ use Symfony\Component\Yaml\Yaml;
 class YamlParser implements ParserInterface
 {
     /** @var Yaml|YamlAdapter $yaml */
-    private $yaml;
+    private static $yaml;
 
     public function __construct()
     {
         if (extension_loaded('yaml')) {
-            $this->yaml = new static(YamlAdapter::class);
+            self::$yaml = new static(YamlAdapter::class);
         } else {
-            $this->yaml = new static(Yaml::class);
+            self::$yaml = new static(Yaml::class);
         }
     }
 
@@ -35,7 +35,7 @@ class YamlParser implements ParserInterface
      */
     public function parse(string $file): array
     {
-        $data = $this->yaml->parse(file_get_contents($file));
+        $data = self::$yaml->parse(file_get_contents($file));
         if (!$data) {
             throw new ParseErrorException('Error parsing yaml file');
         }

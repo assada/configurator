@@ -16,7 +16,7 @@ use Symfony\Component\Yaml\Yaml;
 class YamlDumper implements DumperInterface
 {
     /** @var Yaml|YamlAdapter */
-    private $yaml;
+    private static $yaml;
 
     /**
      * YamlDumper constructor.
@@ -24,9 +24,9 @@ class YamlDumper implements DumperInterface
     public function __construct()
     {
         if (extension_loaded('yaml')) {
-            $this->yaml = new static(YamlAdapter::class);
+            self::$yaml = new static(YamlAdapter::class);
         } else {
-            $this->yaml = new static(Yaml::class);
+            self::$yaml = new static(Yaml::class);
         }
     }
 
@@ -35,6 +35,6 @@ class YamlDumper implements DumperInterface
      */
     public function dump(array $data): string
     {
-        return $this->yaml->dump($data);
+        return self::$yaml->dump($data);
     }
 }
