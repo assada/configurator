@@ -7,6 +7,14 @@ Via Composer
 composer require assada/configurator
 ```
 
+###Requirements
+
+PHP: >= **7.0**
+
+symfony/yaml: >= 3.2
+
+Instead of symfony/yaml suggest install PECL yaml extension.
+
 ###Usage
 
 ```php
