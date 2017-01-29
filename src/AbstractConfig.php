@@ -162,6 +162,6 @@ class AbstractConfig implements ConfigInterface
      */
     public function offsetUnset($offset)
     {
-        $this->set($offset, null);
+        $this->remove($offset);
     }
 }

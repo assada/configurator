@@ -2,7 +2,8 @@
 
 namespace Assada\Dumper;
 
-use Assada\Adapter\YamlAdapter;
+use Assada\Adapter\Yaml\YamlInterface;
+use Assada\Adapter\YamlFactory;
 use Symfony\Component\Yaml\Yaml;
 
 
@@ -15,19 +16,16 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlDumper implements DumperInterface
 {
-    /** @var Yaml|YamlAdapter */
-    private static $yaml;
+    /** @var YamlInterface */
+    private $yaml;
 
     /**
      * YamlDumper constructor.
      */
     public function __construct()
     {
-        if (extension_loaded('yaml')) {
-            self::$yaml = new YamlAdapter();
-        } else {
-            self::$yaml = new Yaml();
-        }
+        $yaml       = new Yaml();
+        $this->yaml = (new YamlFactory($yaml))->getInstance();
     }
 
     /**
@@ -35,6 +33,6 @@ class YamlDumper implements DumperInterface
      */
     public function dump(array $data): string
     {
-        return self::$yaml->dump($data);
+        return $this->yaml->dump($data);
     }
 }
