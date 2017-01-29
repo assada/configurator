@@ -3,7 +3,10 @@
 namespace Assada;
 
 use Assada\Dumper\DumperInterface;
+use Assada\Dumper\IniDumper;
 use Assada\Dumper\JsonDumper;
+use Assada\Dumper\PhpDumper;
+use Assada\Dumper\YamlDumper;
 use Assada\Exception\FileNotFoundException;
 use Assada\Exception\UnsupportedExtensionException;
 use Assada\Parser\IniParser;
@@ -33,6 +36,9 @@ class Config extends AbstractConfig
 
     protected $fileDumpers = [
         JsonDumper::class => ['json'],
+        YamlDumper::class => ['yml'],
+        IniDumper::class  => ['ini'],
+        PhpDumper::class  => ['php']
     ];
 
     /**
