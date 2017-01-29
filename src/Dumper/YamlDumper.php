@@ -24,9 +24,9 @@ class YamlDumper implements DumperInterface
     public function __construct()
     {
         if (extension_loaded('yaml')) {
-            self::$yaml = new static(YamlAdapter::class);
+            self::$yaml = new YamlAdapter();
         } else {
-            self::$yaml = new static(Yaml::class);
+            self::$yaml = new Yaml();
         }
     }
 
