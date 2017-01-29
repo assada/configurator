@@ -11,5 +11,10 @@ namespace Assada\Dumper;
  */
 interface DumperInterface
 {
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
     public function dump(array $data): string;
 }

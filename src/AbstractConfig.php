@@ -17,40 +17,16 @@ class AbstractConfig implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function get(string $key, $fallback = null)
+    public function all(): array
     {
-        $keys = explode('.', $key);
-
-        $value   = $fallback;
-        $residue = $this->data;
-        foreach ($keys as $k) {
-            if (array_key_exists($k, $residue)) {
-                $value = $residue = $residue[$k];
-            } else {
-                return $fallback;
-            }
-        }
-
-        return $value;
+        return $this->data;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function set(string $key, $value)
+    public function remove(string $key)
     {
-        $map = explode('.', $key);
-
-        $data = &$this->data;
-        while ($k = array_shift($map)) {
-            if (!array_key_exists($k, $data) && count($map)) {
-                $data[$k] = [];
-            }
-            $data = &$data[$k];
-            unset($map[$k]);
+        if ($this->has($key)) {
+            unset($this->data[$key]);
         }
-
-        $data = $value;
     }
 
     /**
@@ -71,21 +47,6 @@ class AbstractConfig implements ConfigInterface
         }
 
         return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function all(): array
-    {
-        return $this->data;
-    }
-
-    public function remove(string $key)
-    {
-        if ($this->has($key)) {
-            unset($this->data[$key]);
-        }
     }
 
     public function setData(array $data)
@@ -152,9 +113,48 @@ class AbstractConfig implements ConfigInterface
     /**
      * @inheritdoc
      */
+    public function get(string $key, $fallback = null)
+    {
+        $keys = explode('.', $key);
+
+        $value   = $fallback;
+        $residue = $this->data;
+        foreach ($keys as $k) {
+            if (array_key_exists($k, $residue)) {
+                $value = $residue = $residue[$k];
+            } else {
+                return $fallback;
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function set(string $key, $value)
+    {
+        $map = explode('.', $key);
+
+        $data = &$this->data;
+        while ($k = array_shift($map)) {
+            if (!array_key_exists($k, $data) && count($map)) {
+                $data[$k] = [];
+            }
+            $data = &$data[$k];
+            unset($map[$k]);
+        }
+
+        $data = $value;
     }
 
     /**

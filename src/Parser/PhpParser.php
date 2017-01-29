@@ -31,7 +31,7 @@ class PhpParser implements ParserInterface
             throw new Exception('Php file throw exception', $e->getCode(), $e);
         }
 
-        if(!is_array($data)) {
+        if (!is_array($data)) {
             throw new ParseErrorException('PHP file does not return an array', 0, 1, $file, 0);
         }
 

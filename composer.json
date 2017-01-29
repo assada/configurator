@@ -10,7 +10,11 @@
     }
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "symfony/yaml": "3.2.*"
+  },
+  "suggest": {
+    "ext-yaml": "For faster parsing/dump yaml configurations instead of symfony/yaml"
   },
   "autoload": {
     "psr-4": {
