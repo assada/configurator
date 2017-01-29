@@ -2,6 +2,8 @@
 
 namespace Assada\Parser;
 
+use Assada\Exception\ParseErrorException;
+
 
 /**
  * Class JsonParser
@@ -23,7 +25,7 @@ class JsonParser implements ParserInterface
         $data = json_decode(file_get_contents($file), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $errorMessage = json_last_error_msg();
-            throw new \Exception($errorMessage);
+            throw new ParseErrorException($errorMessage);
         }
 
         return $data;

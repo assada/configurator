@@ -41,7 +41,7 @@ class IniParser implements ParserInterface
         return $data;
     }
 
-    public function assignArrayByPath(&$arr, $path, $value)
+    private function assignArrayByPath(&$arr, $path, $value)
     {
         $keys = explode('.', $path);
 

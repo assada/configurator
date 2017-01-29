@@ -41,7 +41,7 @@ class Config extends AbstractConfig
         PhpDumper::class  => ['php']
     ];
 
-    protected static $cachedParsers = [];
+    protected $cachedParsers = [];
 
     /**
      * Config constructor.
@@ -51,9 +51,11 @@ class Config extends AbstractConfig
      * @throws \Assada\Exception\FileNotFoundException
      * @throws \Assada\Exception\UnsupportedExtensionException
      */
-    public function __construct($files)
+    public function __construct($files = null)
     {
-        $this->add($files);
+        if (null !== $files) {
+            $this->add($files);
+        }
     }
 
     /**
@@ -118,19 +120,38 @@ class Config extends AbstractConfig
      */
     private function getParser(string $extension): ParserInterface
     {
-        if (array_key_exists($extension, self::$cachedParsers)) {
-            return self::$cachedParsers[$extension];
-        }
-
-        foreach ($this->fileParsers as $fileParser => $extensions) {
-            if (in_array($extension, $extensions, false)) {
-                self::$cachedParsers[$extension] = new $fileParser();
-
-                return self::$cachedParsers[$extension];
+        $parserExists = false;
+        if (!array_key_exists($extension, $this->cachedParsers)) {
+            foreach ($this->fileParsers as $fileParser => $extensions) {
+                if (in_array($extension, $extensions, false)) {
+                    $this->cachedParsers[$extension] = new $fileParser();
+                    $parserExists                    = true;
+                    break;
+                }
             }
         }
 
-        throw new UnsupportedExtensionException(sprintf('%s not supported such us configuration file', $extension));
+        if (!$parserExists) {
+            throw new UnsupportedExtensionException(sprintf('%s not supported such us configuration file', $extension));
+        }
+
+        return $this->cachedParsers[$extension];
+    }
+
+    /**
+     * @param string $extension
+     *
+     * @return \Assada\Dumper\DumperInterface
+     * @throws \Assada\Exception\UnsupportedExtensionException
+     */
+    private function getDumper(string $extension): DumperInterface
+    {
+        foreach ($this->fileDumpers as $fileDumper => $extensions) {
+            if (in_array($extension, $extensions, false)) {
+                return new $fileDumper();
+            }
+        }
+        throw new UnsupportedExtensionException(sprintf('%s not supported such us dump format', $extension));
     }
 
     /**
@@ -168,21 +189,5 @@ class Config extends AbstractConfig
         $dumper = $this->getDumper($extension);
 
         return $dumper->dump($this->all());
-    }
-
-    /**
-     * @param string $extension
-     *
-     * @return \Assada\Dumper\DumperInterface
-     * @throws \Assada\Exception\UnsupportedExtensionException
-     */
-    private function getDumper(string $extension): DumperInterface
-    {
-        foreach ($this->fileDumpers as $fileDumper => $extensions) {
-            if (in_array($extension, $extensions, false)) {
-                return new $fileDumper();
-            }
-        }
-        throw new UnsupportedExtensionException(sprintf('%s not supported such us dump format', $extension));
     }
 }

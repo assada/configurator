@@ -20,7 +20,7 @@ class PhpDumper implements DumperInterface
      */
     public function dump(array $data): string
     {
-        $export = "<?php\n\n return \n";
+        $export = '<?php return' . PHP_EOL;
         $export .= var_export($data, true);
         $export .= ';';
 

@@ -83,7 +83,9 @@ class AbstractConfig implements ConfigInterface
      */
     public function valid()
     {
-        return key($this->data) !== null;
+        $key = key($this->data);
+
+        return $key !== null && $key !== false;
     }
 
     /**
@@ -162,6 +164,6 @@ class AbstractConfig implements ConfigInterface
      */
     public function offsetUnset($offset)
     {
-        $this->set($offset, null);
+        $this->remove($offset);
     }
 }

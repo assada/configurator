@@ -2,7 +2,8 @@
 
 namespace Assada\Parser;
 
-use Assada\Adapter\YamlAdapter;
+use Assada\Adapter\Yaml\YamlInterface;
+use Assada\Adapter\YamlFactory;
 use Assada\Exception\ParseErrorException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -16,16 +17,13 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlParser implements ParserInterface
 {
-    /** @var Yaml|YamlAdapter $yaml */
-    private static $yaml;
+    /** @var YamlInterface $yaml */
+    private $yaml;
 
     public function __construct()
     {
-        if (extension_loaded('yaml')) {
-            self::$yaml = new YamlAdapter;
-        } else {
-            self::$yaml = new Yaml;
-        }
+        $yaml       = new Yaml();
+        $this->yaml = (new YamlFactory($yaml))->getInstance();
     }
 
     /**
@@ -35,7 +33,7 @@ class YamlParser implements ParserInterface
      */
     public function parse(string $file): array
     {
-        $data = self::$yaml->parse(file_get_contents($file));
+        $data = $this->yaml->parse(file_get_contents($file));
         if (!$data) {
             throw new ParseErrorException('Error parsing yaml file');
         }
