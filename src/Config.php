@@ -51,9 +51,11 @@ class Config extends AbstractConfig
      * @throws \Assada\Exception\FileNotFoundException
      * @throws \Assada\Exception\UnsupportedExtensionException
      */
-    public function __construct($files)
+    public function __construct($files = null)
     {
-        $this->add($files);
+        if (null !== $files) {
+            $this->add($files);
+        }
     }
 
     /**
