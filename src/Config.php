@@ -11,7 +11,6 @@ use Assada\Exception\FileNotFoundException;
 use Assada\Exception\UnsupportedExtensionException;
 use Assada\Parser\IniParser;
 use Assada\Parser\JsonParser;
-use Assada\Parser\ParserInterface;
 use Assada\Parser\PhpParser;
 use Assada\Parser\XmlParser;
 use Assada\Parser\YamlParser;
@@ -114,19 +113,15 @@ class Config extends AbstractConfig
      * @return \Assada\Parser\ParserInterface
      * @throws \Assada\Exception\UnsupportedExtensionException
      */
-    private function getParser(string $extension): ParserInterface
+    private function getParser(string $extension)
     {
-        $parser = null;
         foreach ($this->fileParsers as $fileParser => $extensions) {
             if (in_array($extension, $extensions, false)) {
-                $parser = new $fileParser();
+                return new $fileParser();
             }
         }
-        if (null === $parser) {
-            throw new UnsupportedExtensionException(sprintf('%s not supported such us configuration file', $extension));
-        }
 
-        return $parser;
+        throw new UnsupportedExtensionException(sprintf('%s not supported such us configuration file', $extension));
     }
 
     /**
@@ -136,7 +131,7 @@ class Config extends AbstractConfig
      */
     public function addDumpers(array $dumpers): Config
     {
-        $this->fileDumpers = array_merge($this->fileDumpers, $dumpers);
+        $this->fileDumpers = array_merge($dumpers, $this->fileDumpers);
 
         return $this;
     }
@@ -148,7 +143,7 @@ class Config extends AbstractConfig
      */
     public function addParsers(array $parsers): Config
     {
-        $this->fileParsers = array_merge($this->fileParsers, $parsers);
+        $this->fileParsers = array_merge($parsers, $this->fileParsers);
 
         return $this;
     }
@@ -174,16 +169,11 @@ class Config extends AbstractConfig
      */
     private function getDumper(string $extension): DumperInterface
     {
-        $dumper = null;
         foreach ($this->fileDumpers as $fileDumper => $extensions) {
             if (in_array($extension, $extensions, false)) {
-                $dumper = new $fileDumper();
+                return new $fileDumper();
             }
         }
-        if (null === $dumper) {
-            throw new UnsupportedExtensionException(sprintf('%s not supported such us dump format', $extension));
-        }
-
-        return $dumper;
+        throw new UnsupportedExtensionException(sprintf('%s not supported such us dump format', $extension));
     }
 }
