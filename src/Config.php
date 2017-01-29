@@ -40,6 +40,8 @@ class Config extends AbstractConfig
         PhpDumper::class  => ['php']
     ];
 
+    protected static $cachedParsers = [];
+
     /**
      * Config constructor.
      *
@@ -115,9 +117,15 @@ class Config extends AbstractConfig
      */
     private function getParser(string $extension)
     {
+        if (array_key_exists($extension, self::$cachedParsers)) {
+            return self::$cachedParsers[$extension];
+        }
+
         foreach ($this->fileParsers as $fileParser => $extensions) {
             if (in_array($extension, $extensions, false)) {
-                return new $fileParser();
+                self::$cachedParsers[$extension] = new $fileParser();
+
+                return self::$cachedParsers[$extension];
             }
         }
 
