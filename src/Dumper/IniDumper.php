@@ -22,7 +22,7 @@ class IniDumper implements DumperInterface
 
         $file = '';
         foreach ($flatData as $key => $value) {
-            $file .= sprintf('%s = %s', $key, $value);
+            $file .= sprintf("%s = %s\n", $key, $value);
         }
 
         return $file;
