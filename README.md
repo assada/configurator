@@ -1,5 +1,7 @@
 #Configurator
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/35d38317bbb14f6789de06c580bdea1d)](https://www.codacy.com/app/Assada/configurator?utm_source=github.com&utm_medium=referral&utm_content=Assada/configurator&utm_campaign=badger)
+
 ###Installation
 
 Via Composer
